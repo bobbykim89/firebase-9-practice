@@ -10,6 +10,7 @@ import {
   where,
   orderBy,
   serverTimestamp,
+  getDoc,
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -65,4 +66,13 @@ deleteBookForm.addEventListener('submit', (e) => {
   deleteDoc(docRef).then(() => {
     deleteBookForm.reset();
   });
+});
+
+// Get single document
+const docRef = doc(db, 'books', 'kyEz2rtkejJLdshibz5n');
+// getDoc(docRef).then((doc) => {
+//   console.log(doc.data(), doc.id);
+// });
+onSnapshot(docRef, (doc) => {
+  console.log(doc.data(), doc.id);
 });
