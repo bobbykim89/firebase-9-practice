@@ -11,6 +11,7 @@ import {
   orderBy,
   serverTimestamp,
   getDoc,
+  updateDoc,
 } from 'firebase/firestore';
 
 const firebaseConfig = {
@@ -69,10 +70,24 @@ deleteBookForm.addEventListener('submit', (e) => {
 });
 
 // Get single document
-const docRef = doc(db, 'books', 'kyEz2rtkejJLdshibz5n');
+const docRef = doc(db, 'books', 'ODi52DhUxC0gvewdXCAO');
 // getDoc(docRef).then((doc) => {
 //   console.log(doc.data(), doc.id);
 // });
 onSnapshot(docRef, (doc) => {
   console.log(doc.data(), doc.id);
+});
+
+// updating a document
+const updateForm = document.querySelector('.update');
+updateForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+
+  let docRef = doc(db, 'books', updateForm.id.value);
+
+  updateDoc(docRef, {
+    title: 'updated title',
+  }).then(() => {
+    updateForm.reset();
+  });
 });
