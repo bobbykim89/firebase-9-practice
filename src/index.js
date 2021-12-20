@@ -19,6 +19,7 @@ import {
   createUserWithEmailAndPassword,
   signOut,
   signInWithEmailAndPassword,
+  onAuthStateChanged,
 } from 'firebase/auth';
 
 const firebaseConfig = {
@@ -44,7 +45,7 @@ const colRef = collection(db, 'books');
 const q = query(colRef, orderBy('createdAt'));
 
 // realtime collection data
-onSnapshot(q, (snapshot) => {
+const unsubCol = onSnapshot(q, (snapshot) => {
   let books = [];
   snapshot.docs.forEach((doc) => {
     books.push({ ...doc.data(), id: doc.id });
@@ -82,7 +83,7 @@ const docRef = doc(db, 'books', 'ODi52DhUxC0gvewdXCAO');
 // getDoc(docRef).then((doc) => {
 //   console.log(doc.data(), doc.id);
 // });
-onSnapshot(docRef, (doc) => {
+const unsubDoc = onSnapshot(docRef, (doc) => {
   console.log(doc.data(), doc.id);
 });
 
@@ -110,7 +111,7 @@ signupForm.addEventListener('submit', (e) => {
 
   createUserWithEmailAndPassword(auth, email, password)
     .then((cred) => {
-      console.log('user created', cred.user);
+      // console.log('user created', cred.user);
       signupForm.reset();
     })
     .catch((err) => {
@@ -123,7 +124,7 @@ const logoutButton = document.querySelector('.logout');
 logoutButton.addEventListener('click', () => {
   signOut(auth)
     .then(() => {
-      console.log('user signed out');
+      // console.log('user signed out');
     })
     .catch((err) => {
       console.log(err.message);
@@ -138,9 +139,23 @@ loginForm.addEventListener('submit', (e) => {
   const password = loginForm.password.value;
   signInWithEmailAndPassword(auth, email, password)
     .then((cred) => {
-      console.log('user logged in', cred.user);
+      // console.log('user logged in', cred.user);
     })
     .catch((err) => {
       console.log(err.message);
     });
+});
+
+// Subscribing to auth changes
+const unsubAuth = onAuthStateChanged(auth, (user) => {
+  console.log('user status changed:', user);
+});
+
+// unsubscribing from changes (auth & db)
+const unsubButton = document.querySelector('.unsub');
+unsubButton.addEventListener('click', () => {
+  console.log('unsubscribing..');
+  unsubCol();
+  unsubDoc();
+  unsubAuth();
 });
